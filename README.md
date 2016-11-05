@@ -5,6 +5,6 @@ A simple (one hopes) queueing system to automate encoding of files with Handbrak
 In order to run this script, you need:
    1. Linux
    2. Perl including the following modules
-      *Getopt::Long
-      *YAML::Tiny
+     * Getopt::Long
+     * YAML::Tiny
    3. HandbrakeCLI
