@@ -22,6 +22,7 @@ use warnings;
 use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
+use File::Basename;
 use File::Copy;
 
 use run_handbrake;
@@ -170,11 +171,19 @@ sub ProcessInputFiles
 		my $extension_acceptable = 0;
 		foreach my $extension (@{$global_configuration->[0]->{input_file_extensions}})
 		{
-			if($input_filename =~ m/\Q$extension$/)
+			my ($base, $dir, $ext) = fileparse($input_directory_path . $input_filename);
+			if($ext eq $extension)
 			{
 				$extension_acceptable = 1;
 				last;
 			}
+		}
+		
+		if(!$extension_acceptable)
+		{
+			PrintMessage("WARNING: No input files with valid extensions detected.  Aborting.", 1) if($interactive_mode);
+			PrintMessageToFile($session_log_handle, "WARNING: No input files with valid extensions detected.  Aborting.", 1) unless($interactive_mode);
+			return;
 		}
 
 		PrintMessage("Processing $input_directory_path$input_filename...", 1) if($interactive_mode);
@@ -242,8 +251,7 @@ sub ProcessInputFiles
 		
 		if($return_status != 0)
 		{
-			my $new_filename = $input_filename;
-			$new_filename =~ s/\..*?$/.BAD/;
+			my $new_filename = $input_filename . ".BAD";
 
 			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
@@ -260,8 +268,7 @@ sub ProcessInputFiles
 
 			if($global_configuration->[0]->{on_complete} eq "rename")
 			{
-				my $new_filename = $input_filename;
-				$new_filename =~ s/\..*?$/.DONE/;
+				my $new_filename = $input_filename . ".DONE";
 
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
