@@ -65,7 +65,7 @@ sub get_decomb {
     my $profile = shift;
     my $decomb = 0;
     if( exists $profile->{filters}->{decomb}) {
-        my $decomb_str = $profile->{video}->{quality};
+        my $decomb_str = $profile->{filters}->{decomb};
         if( lc $decomb_str == 'true') {
             $decomb = 1;
         }

@@ -70,7 +70,7 @@ sub run {
     my $quality = profile::get_quality_factor($profile);
     push @cmd_args, '-q', $quality;
     # Append decomb
-    if( profile->get_decomb($profile)) {
+    if( profile::get_decomb($profile)) {
         push @cmd_args, '-5'
     }
     # Append audio tracks

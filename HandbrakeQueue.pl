@@ -42,29 +42,29 @@ sub Initialize
 	my $main_config_file;
 	my $session_log_file;
 	my $session_log_handle;
-	
+
 	GetOptions("config=s" => \$main_config_file,
 			   'interactive' => \$interactive_mode)
 		or die("ERROR: Couldn't process input parameters.\nUSAGE: perl $script_name --config <path_to_main_config_file.yml> [--interactive]\n");
-		
+
 	die("ERROR: Main config file must be specified.\nUSAGE: perl $script_name --config <path_to_main_config_file.yml> [--interactive]\n") 
 		unless defined($main_config_file);
-	
+
 	# Load main configuration
 	$global_configuration = YAML::Tiny->read($main_config_file)
 		or die("ERROR: Couldn't load main configuration file\n");
-	
+
 	if(!$interactive_mode)
 	{
 		$session_log_file = $global_configuration->[0]->{session_log_path} . strftime("%d%b%Y-%I%M%S%p.txt", localtime);
 		open($session_log_handle, '>', $session_log_file)
 			or die("ERROR: Couldn't open session log $session_log_file\n");
-	
+
 		PrintMessage("New session log created at $session_log_file. There will be no further console output (unless there's an error that can't be logged)");
 	}
-	
+
 	ProcessInputDirectories($session_log_handle);
-	
+
 	PrintMessage("Processing complete.\n", 1) if($interactive_mode);
 	PrintMessageToFile($session_log_handle, "Processing complete.\n", 1) unless($interactive_mode);
 }
@@ -75,32 +75,32 @@ sub ProcessInputDirectories
 	{
 		die "ERROR: You passed the wrong parameter set to ProcessInputDirectories\n";
 	}
-	
+
 	my $session_log_handle = $_[0];
 
 	PrintMessage("Spinning through input_paths...", 1) if($interactive_mode);
 	PrintMessageToFile($session_log_handle, "Spinning through input_paths...", 1) unless($interactive_mode);
-	
+
 	foreach my $path (@{$global_configuration->[0]->{input_paths}})
 	{
 		if(-e $path && -d $path) # If the path exists, and is in fact a directory
 		{
 			PrintMessage("Processing input path $path...", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "Processing input path $path...", 1) unless($interactive_mode);
-		
+
 			my $locally_configured;
 			my $output_path = $global_configuration->[0]->{default_output_path};
 			my $profile_file = $global_configuration->[0]->{default_profile};
-			
+
 			if(-e $path . "local_config.yml" && -f $path . "local_config.yml") # If a local configuration file is present
 			{
 				PrintMessage("Local configuration file found, loading it...", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "Local configuration file found, loading it...", 1) unless($interactive_mode);
 			
-			
+
 				# Load the local config
 				$locally_configured = 1;
-				
+
 				my $local_configuration;
 				unless($local_configuration = YAML::Tiny->read($path . "local_config.yml"))
 				{
@@ -108,7 +108,7 @@ sub ProcessInputDirectories
 					PrintMessage("WARNING: Couldn't process local configuration file.  Will use defaults", 0) if($interactive_mode);
 					PrintMessageToFile($session_log_handle, "WARNING: Couldn't process local configuration file.  Will use defaults", 0) unless($interactive_mode)
 				}
-				
+
 				if($locally_configured)
 				{
 					if(exists $local_configuration->[0]->{output_path})
@@ -117,7 +117,7 @@ sub ProcessInputDirectories
 						PrintMessage("Output path overridden, output for files in this directory will go in $output_path", 0) if($interactive_mode);
 						PrintMessageToFile($session_log_handle, "Output path overridden, output for files in this directory will go in $output_path", 0) unless($interactive_mode)
 					}
-					
+
 					if(exists $local_configuration->[0]->{profile})
 					{
 						$profile_file = $local_configuration->[0]->{profile};
@@ -125,10 +125,10 @@ sub ProcessInputDirectories
 						PrintMessageToFile($session_log_handle, "Encoding profile overridden, will use $profile_file instead for files in this directory.", 0) unless($interactive_mode)
 					}
 				}
-				
-				# Deal with the files in the path
-				ProcessInputFiles($session_log_handle, $path, $output_path, $profile_file);
 			}
+
+			# Deal with the files in the path
+			ProcessInputFiles($session_log_handle, $path, $output_path, $profile_file);
 		}
 		else
 		{
@@ -136,7 +136,7 @@ sub ProcessInputDirectories
 			PrintMessageToFile($session_log_handle, "WARNING: input directory $path does not exist.  It will be skipped.", 0) unless($interactive_mode);
 		}
 	}
-	
+
 	PrintMessage("Finished spinning through input_paths", 1) if($interactive_mode);
 	PrintMessageToFile($session_log_handle, "Finished spinning through input_paths", 1) unless($interactive_mode);
 }
@@ -159,14 +159,14 @@ sub ProcessInputFiles
 		PrintMessageToFile($session_log_handle, "WARNING: Couldn't open input path $input_directory_path... its contents will be skipped.", 0) unless($interactive_mode);
 		return;
 	}
-	
+
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title.  It will do who knows what if undef.
-		
-		next unless(-f "$input_directory_path/$input_filename");
-		
+
+		next unless(-f $input_directory_path . $input_filename);
+
 		my $extension_acceptable = 0;
 		foreach my $extension (@{$global_configuration->[0]->{input_file_extensions}})
 		{
@@ -176,20 +176,20 @@ sub ProcessInputFiles
 				last;
 			}
 		}
-		
-		PrintMessage("Processing $input_directory_path/$input_filename...", 1) if($interactive_mode);
-		PrintMessageToFile($session_log_handle, "Processing $input_directory_path/$input_filename", 1) unless($interactive_mode);
-		
+
+		PrintMessage("Processing $input_directory_path$input_filename...", 1) if($interactive_mode);
+		PrintMessageToFile($session_log_handle, "Processing $input_directory_path$input_filename", 1) unless($interactive_mode);
+
 		my $override_config_file = $input_filename;
 		$override_config_file =~ s/\..*?$/.yml/;
-		
+
 		if(-e $override_config_file && -f $override_config_file)
 		{
-			PrintMessage("Configuration override file for $input_directory_path/$input_filename found, loading it...", 1) if($interactive_mode);
-			PrintMessageToFile($session_log_handle, "Configuration override file for $input_directory_path/$input_filename found, loading it...", 1) unless($interactive_mode);
+			PrintMessage("Configuration override file for $input_directory_path$input_filename found, loading it...", 1) if($interactive_mode);
+			PrintMessageToFile($session_log_handle, "Configuration override file for $input_directory_path$input_filename found, loading it...", 1) unless($interactive_mode);
 
 			my $config_overridden = 0;
-			my $config_override;				
+			my $config_override;
 		
 			# Load the local config
 			$config_overridden = 1;
@@ -200,77 +200,77 @@ sub ProcessInputFiles
 				PrintMessage("WARNING: Couldn't process configuration override file.  Will use defaults", 0) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Couldn't process configuration override file.  Will use defaults", 0) unless($interactive_mode)
 			}
-			
+
 			if($config_overridden)
 			{
 				if(exists $config_override->[0]->{output_path})
 				{
 					$output_directory_path = $config_override->[0]->{output_path};
-					
+
 					PrintMessage("Output path overridden, output will go in $output_directory_path", 0) if($interactive_mode);
 					PrintMessageToFile($session_log_handle, "Output path overridden, output will go in $output_directory_path", 0) unless($interactive_mode)
 				}
-				
+
 				if(exists $config_override->[0]->{output_filename})
 				{
 					$output_filename = $config_override->[0]->{output_filename};
 					PrintMessage("Output filename overridden, output file will be called $output_filename", 0) if($interactive_mode);
 					PrintMessageToFile($session_log_handle, "Output filename overridden, output file will be called $output_filename", 0) unless($interactive_mode)
 				}
-				
+
 				if(exists $config_override->[0]->{profile})
 				{
 					$profile_file = $config_override->[0]->{profile};
 					PrintMessage("Encoding profile overridden, will use $profile_file instead.", 0) if($interactive_mode);
 					PrintMessageToFile($session_log_handle, "Encoding profile overridden, will use $profile_file instead", 0) unless($interactive_mode)
 				}
-				
+
 				if(exists $config_override->[0]->{title})
 				{
 					$output_title = $config_override->[0]->{title};
 				}
 			}
-			
-			# Invoke the CLI
-			my $encode_log_file = $global_configuration->[0]->{encode_log_path} . strftime("%d%b%Y-%I%M%S%p_$input_filename", localtime);
-			
-			PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
-			PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
-				
-			my $return_status = run_handbrake::run($input_directory_path . $input_filename, $output_directory_path . $output_filename, $output_title, $profile_file, $encode_log_file);
-			
-			if($return_status != 0)
+		}
+
+		# Invoke the CLI
+		my $encode_log_file = $global_configuration->[0]->{encode_log_path} . strftime("%d%b%Y-%I%M%S%p_$input_filename", localtime);
+
+		PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
+		PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
+
+		my $return_status = run_handbrake::run($input_directory_path . $input_filename, $output_directory_path . $output_filename, $output_title, $profile_file, $encode_log_file);
+		
+		if($return_status != 0)
+		{
+			my $new_filename = $input_filename;
+			$new_filename =~ s/\..*?$/.BAD/;
+
+			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
+			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
+
+			PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
+			PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
+
+			move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
+		}
+		else
+		{
+			PrintMessage("Encode for $input_filename complete.", 1) if($interactive_mode);
+			PrintMessageToFile($session_log_handle, "Encode for $input_filename complete.", 1) unless($interactive_mode);
+
+			if($global_configuration->[0]->{on_complete} eq "rename")
 			{
 				my $new_filename = $input_filename;
-				$new_filename =~ s/\..*?$/.BAD/;
-				
-				PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
-				PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
-				
+				$new_filename =~ s/\..*?$/.DONE/;
+
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
-				
+
 				move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
 			}
-			else
+			else # delete
 			{
-				PrintMessage("Encode for $input_filename complete.", 1) if($interactive_mode);
-				PrintMessageToFile($session_log_handle, "Encode for $input_filename complete.", 1) unless($interactive_mode);
-				
-				if($global_configuration->[0]->{on_complete} eq "rename")
-				{
-					my $new_filename = $input_filename;
-					$new_filename =~ s/\..*?$/.DONE/;
-					
-					PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
-					PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
-				
-					move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
-				}
-				else # delete
-				{
-					unlink $input_directory_path . $input_filename;
-				}
+				unlink $input_directory_path . $input_filename;
 			}
 		}
 	}
@@ -283,7 +283,7 @@ sub PrintMessage
 	my $message;
 	my $include_timestamp;
 	my $timestamp = strftime("%d %b %Y - %I:%M:%S %p", localtime);
-	
+
 	if(scalar @_ > 2 || scalar @_ < 1)
 	{
 		die "ERROR: You passed the wrong parameter set in to PrintMessage\n";
@@ -305,7 +305,7 @@ sub PrintMessage
 	}
 		
 	$message = $_[0];
-	
+
 	if($include_timestamp == 1)
 	{
 		print "[$timestamp] $message\n";
@@ -323,7 +323,7 @@ sub PrintMessageToFile
 	my $message;
 	my $include_timestamp;
 	my $timestamp = strftime("%d %b %Y - %I:%M:%S %p", localtime);
-	
+
 	if(scalar @_ > 3 || scalar @_ < 2)
 	{
 		die "ERROR: You passed the wrong parameter set in to PrintMessage\n";
@@ -346,7 +346,7 @@ sub PrintMessageToFile
 		
 	$file_handle = $_[0];
 	$message = $_[1];
-	
+
 	if($include_timestamp == 1)
 	{
 		print $file_handle "[$timestamp] $message\n";

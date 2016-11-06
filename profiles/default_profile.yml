@@ -2,7 +2,7 @@ audio:
   encoder: copy
   tracks:
     - 1
-	- 2
+    - 2
     - 3
     - 4
 
@@ -17,5 +17,5 @@ subtitle:
   tracks:
     - 1
     - 2
-	- 3
+    - 3
     - 4
