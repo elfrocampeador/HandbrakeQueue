@@ -18,6 +18,8 @@ use warnings;
 
 use File::Which qw(which);
 
+use HandbrakeQueue::profile;
+
 =head1 NAME
 
 HandbrakeQueue::run_handbrake - Run the HandBrakeCLI
@@ -42,22 +44,38 @@ sub find_handbrake_cli {
 =head3 run
 
     HandbrakeQueue::run_handbrake->run(
-        $input_file, $output_file, $title, %config);
+        $input_file, $output_file, $title, $profile_path);
 
 Actually run the HandBrakeCLI on a file.
 
 =cut
 
 sub run {
-    my ($infile, $outfile, $title, %config) = @_;
+    my ($infile, $outfile, $title, $profile_path) = @_;
     if( find_handbrake_cli() == 0) {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
-    my @cmd_args = ('HandBrakeCLI', '-i', $infile, 't', $title, '-o', $outfile);
-    # Default Encoder settings if none are defined
-    push @cmd_args, '-e', 'x264', '-q', '18', '-E',
-             'copy', join(',', %config{'audio_tracks'});
-    # TODO(mtreinish): define a format for config and how to handle building an
-    # arg list from it
+    my @cmd_args = ('HandBrakeCLI', '-i', $infile, 't',
+                    $title, '-o', $outfile);
+    my $profile = HandbrakeQueue::profile->parse($profile_path);
+    # Append video encoder option
+    my $video_enc = HandbrakeQueue::profile->get_video_encoder($profile);
+    push @cmd_args, '-e', $video_enc;
+    # Append audio encoder option
+    my $audio_enc = HandbrakeQueue::profile->get_audio_encoder($profile);
+    push @cmd_args, '-E', $audio_enc;
+    # Append video quality setting
+    my $quality = HandbrakeQueue::profile->get_quality_factor($profile);
+    push @cmd_args, '-q', $quality;
+    # Append decomb
+    if( HandbrakeQueue::profile->get_decomb($profile)) {
+        push @cmd_args, '-5'
+    }
+    # Append audio tracks
+    my @audio_tracks = HandbrakeQueue::profile->get_audio_tracks($profile);
+    if( defined @audio_tracks) {
+        push @cmd_args, join(',', @audio_tracks);
+    }
+    # TODO(mtreinish): Add STDOUT redirection
     system(@cmd_args);
 }
