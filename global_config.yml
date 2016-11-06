@@ -4,6 +4,10 @@ encode_log_path: /data0/private/VideoTranscoding/logs/encode/
 input_paths:
   - /data0/private/VideoTranscoding/sd_input/
   - /data0/private/VideoTranscoding/hd_input/
+input_file_extensions:
+  - .avi
+  - .mkv
+  - .mp4
 default_output_path: /data0/private/VideoTranscoding/sd_output/
 default_profile: /data0/private/VideoTranscoding/profiles/default_profile.yml
 on_complete: rename

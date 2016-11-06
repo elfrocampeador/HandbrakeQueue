@@ -22,6 +22,7 @@ use warnings;
 use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
+use File::Copy;
 
 use run_handbrake;
 
@@ -236,17 +237,40 @@ sub ProcessInputFiles
 			PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
 				
-			my $return_status = run_handbrake::run($input_directory_path . $input_filename, $output_directory_path . $output_filename, $output_title, $profile_file, $encode_log_file)
+			my $return_status = run_handbrake::run($input_directory_path . $input_filename, $output_directory_path . $output_filename, $output_title, $profile_file, $encode_log_file);
 			
 			if($return_status != 0)
 			{
+				my $new_filename = $input_filename;
+				$new_filename =~ s/\..*?$/.BAD/;
+				
 				PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
+				
+				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
+				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
+				
+				move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
 			}
 			else
 			{
 				PrintMessage("Encode for $input_filename complete.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "Encode for $input_filename complete.", 1) unless($interactive_mode);
+				
+				if($global_configuration->[0]->{on_complete} eq "rename")
+				{
+					my $new_filename = $input_filename;
+					$new_filename =~ s/\..*?$/.DONE/;
+					
+					PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
+					PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
+				
+					move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
+				}
+				else # delete
+				{
+					unlink $input_directory_path . $input_filename;
+				}
 			}
 		}
 	}
