@@ -18,15 +18,15 @@ use warnings;
 
 use File::Which qw(which);
 
-use HandbrakeQueue::profile;
+use profile;
 
 =head1 NAME
 
-HandbrakeQueue::run_handbrake - Run the HandBrakeCLI
+run_handbrake - Run the HandBrakeCLI
 
 =head3 find_handbrake_cli
 
-    my $handbrake_avail = HandbrakeQueue::run_handbrake->find_handbrake_cli();
+    my $handbrake_avail = run_handbrake->find_handbrake_cli();
 
 Check if the HandBrakeCLI executable can be found in the current PATH.
 
@@ -43,7 +43,7 @@ sub find_handbrake_cli {
 
 =head3 run
 
-    HandbrakeQueue::run_handbrake->run(
+    run_handbrake->run(
         $input_file, $output_file, $title, $profile_path);
 
 Actually run the HandBrakeCLI on a file.
@@ -59,22 +59,22 @@ sub run {
     if( defined $title) {
         push @cmd_args, '-t', $title
     }
-    my $profile = HandbrakeQueue::profile->parse($profile_path);
+    my $profile = profile->parse($profile_path);
     # Append video encoder option
-    my $video_enc = HandbrakeQueue::profile->get_video_encoder($profile);
+    my $video_enc = profile->get_video_encoder($profile);
     push @cmd_args, '-e', $video_enc;
     # Append audio encoder option
-    my $audio_enc = HandbrakeQueue::profile->get_audio_encoder($profile);
+    my $audio_enc = profile->get_audio_encoder($profile);
     push @cmd_args, '-E', $audio_enc;
     # Append video quality setting
-    my $quality = HandbrakeQueue::profile->get_quality_factor($profile);
+    my $quality = profile->get_quality_factor($profile);
     push @cmd_args, '-q', $quality;
     # Append decomb
-    if( HandbrakeQueue::profile->get_decomb($profile)) {
+    if( profile->get_decomb($profile)) {
         push @cmd_args, '-5'
     }
     # Append audio tracks
-    my @audio_tracks = HandbrakeQueue::profile->get_audio_tracks($profile);
+    my @audio_tracks = profile->get_audio_tracks($profile);
     if( defined @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
