@@ -2,12 +2,13 @@ audio:
   encoder: copy
   tracks:
     - 1
+	- 2
     - 3
     - 4
 
 video:
   encoder: x264
-  quality: 15
+  quality: 19
 
 filters:
   decomb: True
@@ -16,4 +17,5 @@ subtitle:
   tracks:
     - 1
     - 2
+	- 3
     - 4
