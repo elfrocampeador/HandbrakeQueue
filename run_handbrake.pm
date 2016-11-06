@@ -88,7 +88,7 @@ sub run {
     # Append encoder preset
     my $encoder_preset = profile::get_video_encoder_preset($profile);
     if( defined $encoder_preset) {
-        push @cmd_args, 'encoder-preset';
+        push @cmd_args, '--encoder-preset', $encoder_preset;
     }
 
     # Add STDOUT and STDERR redirection
