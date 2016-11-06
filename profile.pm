@@ -82,4 +82,16 @@ sub get_subtitle_tracks {
     return @subtitle_tracks;
 }
 
+sub get_chapters {
+    my $profile = shift;
+    my $chapters = 1;
+    if( exists $profile->{chapters}) {
+        my $chapter_str = $profile->{chapters};
+        if( lc $chapter_str eq 'false') {
+            $chapters = 0;
+        }
+    }
+    return $chapters;
+}
+
 1;

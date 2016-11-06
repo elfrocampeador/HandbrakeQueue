@@ -80,6 +80,11 @@ sub run {
     if( @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
+    # Append chapters
+    if( profile::get_chapters($profile)) {
+        push @cmd_args, '-m';
+    }
+
     # Add STDOUT and STDERR redirection
     open (my $file, '>', $log_path);
 	
