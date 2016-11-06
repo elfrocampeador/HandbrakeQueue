@@ -78,11 +78,11 @@ sub run {
     if( @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
-    my $cmd_str = join(' ', @cmd_args);
-    # Add STDOUT redirection
+    # Add STDOUT and STDERR redirection
     open (my $file, '>', $log_path);
-    print $file `$cmd_str`;
-    return $?;
+    local *STDOUT = $file
+    local *STDERR = $file
+    return system(@cmd_args)
 }
 
 1;
