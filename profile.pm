@@ -66,7 +66,7 @@ sub get_decomb {
     my $decomb = 0;
     if( exists $profile->{filters}->{decomb}) {
         my $decomb_str = $profile->{filters}->{decomb};
-        if( lc $decomb_str == 'true') {
+        if( lc $decomb_str eq 'true') {
             $decomb = 1;
         }
     }
