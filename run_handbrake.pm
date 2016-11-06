@@ -18,6 +18,8 @@ use warnings;
 
 use File::Which qw(which);
 
+use Capture::Tiny 'capture_merged';
+
 use profile;
 
 =head1 NAME
@@ -80,9 +82,8 @@ sub run {
     }
     # Add STDOUT and STDERR redirection
     open (my $file, '>', $log_path);
-    local *STDOUT = $file;
-    local *STDERR = $file;
-    return system(@cmd_args);
+    print $file capture_merged { my $return_code = system(@cmd_args) };
+    return $return_code;
 }
 
 1;
