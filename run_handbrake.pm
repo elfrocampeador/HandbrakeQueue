@@ -55,8 +55,10 @@ sub run {
     if( find_handbrake_cli() == 0) {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
-    my @cmd_args = ('HandBrakeCLI', '-i', $infile, 't',
-                    $title, '-o', $outfile);
+    my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o', $outfile);
+    if( defined $title) {
+        push @cmd_args, '-t', $title
+    }
     my $profile = HandbrakeQueue::profile->parse($profile_path);
     # Append video encoder option
     my $video_enc = HandbrakeQueue::profile->get_video_encoder($profile);
