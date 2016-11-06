@@ -8,7 +8,7 @@ audio:
 
 video:
   encoder: x264
-  encoder_preset: foobar
+  encoder_preset: Slower
   quality: 19
 
 filters:
@@ -21,4 +21,4 @@ subtitle:
     - 3
     - 4
 
-chapters: False
+chapters: True

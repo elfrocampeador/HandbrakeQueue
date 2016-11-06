@@ -171,7 +171,10 @@ sub ProcessInputFiles
 		my $extension_acceptable = 0;
 		foreach my $extension (@{$global_configuration->[0]->{input_file_extensions}})
 		{
-			my ($base, $dir, $ext) = fileparse($input_directory_path . $input_filename);
+			# For some reason fileparse wants the array of acceptable extensions for itself.  <cough>GOLLUM</cough>
+			# I'm sure there's a better way to write this, but I can't be bothered at the moment.
+			my ($base, $dir, $ext) = fileparse($input_directory_path . $input_filename, (@{$global_configuration->[0]->{input_file_extensions}}));
+			
 			if($ext eq $extension)
 			{
 				$extension_acceptable = 1;
