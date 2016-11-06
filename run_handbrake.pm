@@ -51,7 +51,7 @@ Actually run the HandBrakeCLI on a file.
 =cut
 
 sub run {
-    my ($infile, $outfile, $title, $profile_path) = @_;
+    my ($infile, $outfile, $title, $profile_path, $log_path) = @_;
     if( find_handbrake_cli() == 0) {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
@@ -78,6 +78,9 @@ sub run {
     if( defined @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
-    # TODO(mtreinish): Add STDOUT redirection
-    system(@cmd_args);
+    my $cmd_str = join(' ', @cmd_args)
+    # Add STDOUT redirection
+    open (my $file, '>', $log_path);
+    print $file `$cmd_str`
+    return $?
 }
