@@ -1,4 +1,21 @@
 #! /usr/bin/perl
+## Handbrake CLI Queue Manager Thingy
+# Started in the wee hours of 5 November 2016
+# Corey "ElFroCampeador" Mendell
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 use strict;
 use warnings;
 
@@ -6,13 +23,7 @@ use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
 
-#####################################################################################################################################
-# Handbrake CLI Queue Manager Thingy
-# Started in the wee hours of 5 November 2016
-# Corey "ElFroCampeador" Mendell
-#
-# A proper license may or may not come at some point, but for now only Corey and Matt Treinish (of OpenStack fame) may edit this code
-#####################################################################################################################################
+
 
 
 # GLOBAL SECTION
