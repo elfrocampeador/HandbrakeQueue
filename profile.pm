@@ -30,10 +30,8 @@ sub get_audio_tracks {
     my @audio_tracks;
     if( exists $profile->{audio}->{tracks}) {
         my @audio_tracks = $profile->{audio}->{tracks};
-        return @audio_tracks;
-    } else {
-        return undef;
     }
+    return @audio_tracks;
 }
 
 sub get_audio_encoder {
@@ -80,8 +78,8 @@ sub get_subtitle_tracks {
     my @subtitle_tracks;
     if( exists $profile->{subtitle}->{tracks}) {
         my @subtitle_tracks = $profile->{subtitle}->{tracks};
-        return @subtitle_tracks;
-    } else {
-        return undef;
     }
+    return @subtitle_tracks;
 }
+
+1;

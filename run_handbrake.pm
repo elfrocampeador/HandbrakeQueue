@@ -59,28 +59,30 @@ sub run {
     if( defined $title) {
         push @cmd_args, '-t', $title
     }
-    my $profile = profile->parse($profile_path);
+    my $profile = profile::parse($profile_path);
     # Append video encoder option
-    my $video_enc = profile->get_video_encoder($profile);
+    my $video_enc = profile::get_video_encoder($profile);
     push @cmd_args, '-e', $video_enc;
     # Append audio encoder option
-    my $audio_enc = profile->get_audio_encoder($profile);
+    my $audio_enc = profile::get_audio_encoder($profile);
     push @cmd_args, '-E', $audio_enc;
     # Append video quality setting
-    my $quality = profile->get_quality_factor($profile);
+    my $quality = profile::get_quality_factor($profile);
     push @cmd_args, '-q', $quality;
     # Append decomb
     if( profile->get_decomb($profile)) {
         push @cmd_args, '-5'
     }
     # Append audio tracks
-    my @audio_tracks = profile->get_audio_tracks($profile);
-    if( defined @audio_tracks) {
+    my @audio_tracks = profile::get_audio_tracks($profile);
+    if( @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
-    my $cmd_str = join(' ', @cmd_args)
+    my $cmd_str = join(' ', @cmd_args);
     # Add STDOUT redirection
     open (my $file, '>', $log_path);
-    print $file `$cmd_str`
-    return $?
+    print $file `$cmd_str`;
+    return $?;
 }
+
+1;
