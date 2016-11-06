@@ -94,4 +94,13 @@ sub get_chapters {
     return $chapters;
 }
 
+sub get_video_encoder_preset {
+    my $profile = shift;
+    my $encoder_preset = undef;
+    if( exists $profile->{video}->{encoder_preset}) {
+        $encoder_preset = $profile->{video}->{encoder_preset};
+    }
+    return $encoder_preset;
+}
+
 1;

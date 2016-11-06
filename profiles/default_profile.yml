@@ -8,6 +8,7 @@ audio:
 
 video:
   encoder: x264
+  encoder_preset: foobar
   quality: 19
 
 filters:

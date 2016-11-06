@@ -85,6 +85,12 @@ sub run {
         push @cmd_args, '-m';
     }
 
+    # Append encoder preset
+    my $encoder_preset = profile::get_video_encoder_preset($profile);
+    if( defined $encoder_preset) {
+        push @cmd_args, 'encoder-preset';
+    }
+
     # Add STDOUT and STDERR redirection
     open (my $file, '>', $log_path);
 	
