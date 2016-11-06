@@ -80,9 +80,9 @@ sub run {
     }
     # Add STDOUT and STDERR redirection
     open (my $file, '>', $log_path);
-    local *STDOUT = $file
-    local *STDERR = $file
-    return system(@cmd_args)
+    local *STDOUT = $file;
+    local *STDERR = $file;
+    return system(@cmd_args);
 }
 
 1;
