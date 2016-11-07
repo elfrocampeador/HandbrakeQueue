@@ -27,5 +27,4 @@ In order to run this script, you need:
      * Getopt::Long
      * YAML::Tiny
 	 * File::Which
-     * Capture::Tiny
    3. HandbrakeCLI

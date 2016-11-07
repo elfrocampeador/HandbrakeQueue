@@ -90,13 +90,10 @@ sub run {
     if( defined $encoder_preset) {
         push @cmd_args, '--encoder-preset', $encoder_preset;
     }
-
-    # Add STDOUT and STDERR redirection
-    open (my $file, '>', $log_path);
-	
-	my $return_code;
-    print $file capture_merged { $return_code = system(@cmd_args) };
-    return $return_code;
+    # Capture stdout and stderr
+    push @cmd_args, '&>', $log_path;
+    # Run the command
+    return system(join(' ', @cmd_args));
 }
 
 1;
