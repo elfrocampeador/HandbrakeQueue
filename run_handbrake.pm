@@ -59,7 +59,7 @@ sub run {
     }
     my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o', $outfile);
     if( defined $title) {
-        push @cmd_args, '-t', $title
+        push @cmd_args, '-t', $title;
     }
     my $profile = profile::parse($profile_path);
     # Append video encoder option
@@ -73,7 +73,7 @@ sub run {
     push @cmd_args, '-q', $quality;
     # Append decomb
     if( profile::get_decomb($profile)) {
-        push @cmd_args, '-5'
+        push @cmd_args, '-5';
     }
     # Append audio tracks
     my @audio_tracks = profile::get_audio_tracks($profile);
