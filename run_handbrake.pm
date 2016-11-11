@@ -57,7 +57,7 @@ sub run {
     if( find_handbrake_cli() == 0) {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
-    my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o', $outfile);
+    my @cmd_args = ('HandBrakeCLI', '-i', "$infile", '-o', "$outfile");
     if( defined $title) {
         push @cmd_args, '-t', $title;
     }
@@ -80,6 +80,13 @@ sub run {
     if( @audio_tracks) {
         push @cmd_args, join(',', @audio_tracks);
     }
+	
+	# Include all audio tracks (yes or no?)
+	my $all_tracks_flag = profile::get_all_tracks_flag($profile);
+	if($all_tracks_flag eq 'yes') {
+		push @cmd_args, '--all-audio';
+	}
+	
     # Append chapters
     if( profile::get_chapters($profile)) {
         push @cmd_args, '-m';
@@ -91,8 +98,9 @@ sub run {
         push @cmd_args, '--encoder-preset', $encoder_preset;
     }
     # Capture stdout and stderr
-    push @cmd_args, '&>', $log_path;
+    #push @cmd_args, '&>', $log_path;
     # Run the command
+	print join(' ', @cmd_args);
     return system(join(' ', @cmd_args));
 }
 

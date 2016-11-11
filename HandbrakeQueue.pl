@@ -22,7 +22,6 @@ use warnings;
 use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
-use File::Basename;
 use File::Copy;
 
 use run_handbrake;
@@ -153,6 +152,7 @@ sub ProcessInputFiles
 	my $input_directory_path = $_[1];
 	my $output_directory_path = $_[2];
 	my $profile_file = $_[3];
+	my $files_processed = 0;
 		
 	unless(opendir(INPUT_DIR, $input_directory_path))
 	{
@@ -163,17 +163,14 @@ sub ProcessInputFiles
 
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
+		$input_filename =~ s/ /\\ /g;
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title.  It will do who knows what if undef.
-
-		next unless(-f $input_directory_path . $input_filename);
 
 		my $extension_acceptable = 0;
 		foreach my $extension (@{$global_configuration->[0]->{input_file_extensions}})
 		{
-			# For some reason fileparse wants the array of acceptable extensions for itself.  <cough>GOLLUM</cough>
-			# I'm sure there's a better way to write this, but I can't be bothered at the moment.
-			my ($base, $dir, $ext) = fileparse($input_directory_path . $input_filename, (@{$global_configuration->[0]->{input_file_extensions}}));
+			my $ext = GetFileExtension($input_filename);
 			
 			if($ext eq $extension)
 			{
@@ -181,14 +178,12 @@ sub ProcessInputFiles
 				last;
 			}
 		}
-		
+
 		if(!$extension_acceptable)
 		{
-			PrintMessage("WARNING: No input files with valid extensions detected.  Aborting.", 1) if($interactive_mode);
-			PrintMessageToFile($session_log_handle, "WARNING: No input files with valid extensions detected.  Aborting.", 1) unless($interactive_mode);
-			return;
+			next;
 		}
-
+		
 		PrintMessage("Processing $input_directory_path$input_filename...", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Processing $input_directory_path$input_filename", 1) unless($interactive_mode);
 
@@ -246,6 +241,7 @@ sub ProcessInputFiles
 
 		# Invoke the CLI
 		my $encode_log_file = $global_configuration->[0]->{encode_log_path} . strftime("%d%b%Y-%I%M%S%p_$input_filename.txt", localtime);
+		$files_processed++;
 
 		PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
@@ -276,13 +272,20 @@ sub ProcessInputFiles
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-				move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
+				move("$input_directory_path$input_filename", "$input_directory_path$new_filename");
 			}
 			else # delete
 			{
-				unlink $input_directory_path . $input_filename;
+				unlink "$input_directory_path$input_filename";
 			}
 		}
+	}
+	closedir(INPUT_DIR);
+	
+	if($files_processed == 0)
+	{
+		PrintMessage("WARNING: No input files with valid extensions detected.  Aborting.", 1) if($interactive_mode);
+		PrintMessageToFile($session_log_handle, "WARNING: No input files with valid extensions detected.", 1) unless($interactive_mode);
 	}
 }
 
@@ -364,5 +367,25 @@ sub PrintMessageToFile
 	else
 	{
 		print $file_handle "$message\n";
+	}
+}
+
+# Extracts the file extension from a filename
+sub GetFileExtension
+{
+	if(scalar @_ != 1)
+	{
+		die "ERROR: You passed the wrong parameter set in to GetFileExtension";
+	}
+	
+	my $filename = $_[0];
+	my $index;
+	
+	for($index = length($filename); $index >= 0; $index--)
+	{
+		if(substr($filename, $index, 1) eq '.')
+		{
+			return substr($filename, $index);
+		}
 	}
 }

@@ -34,13 +34,23 @@ sub get_audio_tracks {
     return @audio_tracks;
 }
 
+sub get_all_tracks_flag {
+	my $profile = shift;
+	my $all_tracks_flag = 'no';
+	
+	if( exists $profile->{audio}->{all_tracks}) {
+		$all_tracks_flag = $profile->{audio}->{all_tracks};
+	}
+	return $all_tracks_flag;
+}
+
 sub get_audio_encoder {
     my $profile = shift;
     my $encoder = 'copy';
     if( exists $profile->{audio}->{encoder}) {
         $encoder = $profile->{audio}->{encoder};
     }
-    return $encoder
+    return $encoder;
 }
 
 sub get_video_encoder {
@@ -49,7 +59,7 @@ sub get_video_encoder {
     if( exists $profile->{video}->{encoder}) {
         $encoder = $profile->{video}->{encoder};
     }
-    return $encoder
+    return $encoder;
 }
 
 sub get_quality_factor {
@@ -58,7 +68,7 @@ sub get_quality_factor {
     if( exists $profile->{video}->{quality}) {
         $rf = $profile->{video}->{quality}
     }
-    return $rf
+    return $rf;
 }
 
 sub get_decomb {
@@ -70,7 +80,7 @@ sub get_decomb {
             $decomb = 1;
         }
     }
-    return $decomb
+    return $decomb;
 }
 
 sub get_subtitle_tracks {
