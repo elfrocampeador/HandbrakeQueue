@@ -242,13 +242,13 @@ sub ProcessInputFiles
 		}
 
 		# Invoke the CLI
-		my $encode_log_file = $global_configuration->[0]->{encode_log_path} . strftime("%d%b%Y-%I%M%S%p_$input_filename.txt", localtime);
+		my $encode_log_file = $global_configuration->[0]->{encode_log_path} . strftime("%d%b%Y-%I%M%S%p_$orig_input_filename.txt", localtime);
 		$files_processed++;
 
 		PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
 
-		my $return_status = run_handbrake::run($input_directory_path . $input_filename, $output_directory_path . $output_filename, $output_title, $profile_file, $encode_log_file);
+		my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file");
 		
 		if($return_status != 0)
 		{

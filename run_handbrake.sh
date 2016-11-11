@@ -5,4 +5,4 @@
 # log path and any other args are passed directly to HandBrakeCLI
 
 LOG_PATH="$1"
-HandBrakeCLI "${@:2}" &> $LOG_PATH
+HandBrakeCLI ${@:2} &> $LOG_PATH
