@@ -163,7 +163,9 @@ sub ProcessInputFiles
 
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
+		my $orig_input_filename = $input_filename;
 		$input_filename =~ s/ /\\ /g;
+
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title.  It will do who knows what if undef.
 
@@ -250,7 +252,8 @@ sub ProcessInputFiles
 		
 		if($return_status != 0)
 		{
-			my $new_filename = $input_filename . ".BAD";
+			my $new_filename = $orig_input_filename . ".BAD";
+			$input_filename =~ s/\\ / /g;
 
 			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
@@ -258,7 +261,7 @@ sub ProcessInputFiles
 			PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-			move($input_directory_path . $input_filename, $input_directory_path . $new_filename);
+			move("$input_directory_path$input_filename", "$input_directory_path$new_filename");
 		}
 		else
 		{
@@ -267,7 +270,8 @@ sub ProcessInputFiles
 
 			if($global_configuration->[0]->{on_complete} eq "rename")
 			{
-				my $new_filename = $input_filename . ".DONE";
+				my $new_filename = $orig_input_filename . ".DONE";
+				$input_filename =~ s/\\ / /g;
 
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
