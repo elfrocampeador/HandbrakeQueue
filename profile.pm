@@ -28,8 +28,9 @@ sub parse {
 sub get_audio_tracks {
     my $profile = shift;
     my @audio_tracks;
+
     if( exists $profile->{audio}->{tracks}) {
-        my @audio_tracks = $profile->{audio}->{tracks};
+        @audio_tracks = (@{$profile->{audio}->{tracks}});
     }
     return @audio_tracks;
 }

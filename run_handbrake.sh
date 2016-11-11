@@ -4,5 +4,5 @@
 # instead of STDERR. It takes 1 manadatory arg (which is always first) for the
 # log path and any other args are passed directly to HandBrakeCLI
 
-LOG_PATH=$1
-HandBrakeCLI ${@:2} &> $LOG_PATH
+LOG_PATH="$1"
+HandBrakeCLI "${@:2}" &> $LOG_PATH
