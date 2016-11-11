@@ -36,10 +36,13 @@ sub get_audio_tracks {
 
 sub get_all_tracks_flag {
 	my $profile = shift;
-	my $all_tracks_flag = 'no';
+	my $all_tracks_flag = 0;
 	
 	if( exists $profile->{audio}->{all_tracks}) {
-		$all_tracks_flag = $profile->{audio}->{all_tracks};
+        my $all_tracks_flag_str = $profile->{audio}->{all_tracks};
+        if( lc $all_tracks_flag_str eq 'true') {
+            $all_tracks_flag = 1;
+        }
 	}
 	return $all_tracks_flag;
 }

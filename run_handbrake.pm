@@ -85,8 +85,7 @@ sub run {
     }
 	
 	# Include all audio tracks (yes or no?)
-	my $all_tracks_flag = profile::get_all_tracks_flag($profile);
-	if($all_tracks_flag eq 'yes') {
+	if( profile::get_all_tracks_flag($profile)) {
 		push @cmd_args, '--all-audio';
 	}
 	
