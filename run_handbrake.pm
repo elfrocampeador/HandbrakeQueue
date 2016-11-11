@@ -58,8 +58,8 @@ sub run {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
 
-    my @cmd_args = ('./run_handbrake.sh', "$log_path", '-i', "$infile", '-o',
-                    "$outfile");
+    my @cmd_args = ('./run_handbrake.sh', $log_path, '-i', $infile, '-o',
+                    $outfile);
 
     if( defined $title) {
         push @cmd_args, '-t', $title;
@@ -101,10 +101,7 @@ sub run {
         push @cmd_args, '--encoder-preset', $encoder_preset;
     }
 
-    # Capture stdout and stderr
-    #push @cmd_args, '&>', $log_path;
     # Run the command
-	print join(' ', @cmd_args);
     return system(@cmd_args);
 }
 
