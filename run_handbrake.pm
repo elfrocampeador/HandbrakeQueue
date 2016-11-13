@@ -18,8 +18,6 @@ use warnings;
 
 use File::Which qw(which);
 
-use Capture::Tiny 'capture_merged';
-
 use profile;
 
 =head1 NAME
@@ -58,7 +56,7 @@ sub run {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
 
-    my @cmd_args = ('./run_handbrake.sh', $log_path, '-i', $infile, '-o',
+    my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o',
                     $outfile);
 
     if( defined $title) {
@@ -81,12 +79,15 @@ sub run {
     # Append audio tracks
     my @audio_tracks = profile::get_audio_tracks($profile);
     if( @audio_tracks) {
+		push @cmd_args, '--audio';
         push @cmd_args, join(',', @audio_tracks);
     }
 	
-	# Include all audio tracks (yes or no?)
-	if( profile::get_all_tracks_flag($profile)) {
-		push @cmd_args, '--all-audio';
+	# Append audio track names
+	my @audio_track_names = profile::get_audio_track_names($profile);
+	if( @audio_track_names) {
+		push @cmd_args, '--aname';
+		push @cmd_args, join(',', @audio_track_names);
 	}
 	
     # Append chapters
@@ -101,8 +102,11 @@ sub run {
     }
 
     # Run the command
-	print join(' ', @cmd_args) . "\n";
-    return system(@cmd_args);
+	my $cmd_line = join(' ', @cmd_args);
+	
+	my $status = system($cmd_line . " 1>$log_path 2>&1");
+	
+	return $status;
 }
 
 1;

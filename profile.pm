@@ -35,17 +35,14 @@ sub get_audio_tracks {
     return @audio_tracks;
 }
 
-sub get_all_tracks_flag {
+sub get_audio_track_names {
 	my $profile = shift;
-	my $all_tracks_flag = 0;
+	my @audio_track_names;
 	
-	if( exists $profile->{audio}->{all_tracks}) {
-        my $all_tracks_flag_str = $profile->{audio}->{all_tracks};
-        if( lc $all_tracks_flag_str eq 'true') {
-            $all_tracks_flag = 1;
-        }
+	if( exists $profile->{audio}->{track_names}) {
+		@audio_track_names = (@{$profile->{audio}->{track_names}});
 	}
-	return $all_tracks_flag;
+	return @audio_track_names;
 }
 
 sub get_audio_encoder {

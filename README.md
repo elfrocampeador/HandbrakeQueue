@@ -16,6 +16,24 @@ Currently, local_configuration files support the following keys:  output_path, p
 Individual file override files support the following keys: output_path, output_filename, profile, title
 (where profile is the full path to the profile yaml file)
 
+### Profile Features
+#### Audio
+The audio section of an encoder profile may contain the field "encoder" which defaults to copy if not specified.
+The value for encoder may be: av_aac, copy:aac, ac3, copy:ac3, copy:dts, copy:dtshd, mp3, copy:mp3, vorbis, flac16, flac24, copy
+Specify which tracks to include in the encode by including each track's number in an array subitem called "tracks".
+Those tracks may be named by including those names in an array subitem called "track_names".  All spaces in names must be escaped with a \.
+#### Video
+The video section of an encoder profile may include the following items:
+encoder:  Defaults to x264 (for H.264).  May also be mpeg4, mpeg2, VP8, theora, or x265 provided your local installation has the appropriate codec.
+encoder_preset: Depends on which encoder you've selected.  Has no default.  
+quality: The quality or RF value which which to encode.  The values and meaning of each depends on the encoder selected.  Defaults to 18.
+#### Filters
+Currently there is only one misc filter supported:  Decomb which should be specified as true or false
+#### Subtitles
+You can include subtitle tracks in your encode by listing their number in a list in this section called "tracks"
+#### Chapters
+Specify whether or not to copy chapter marks in your encode by specifying a top level item "chapters" as either true or false
+
 HandbrakeQueue.pl produces two levels of output logging.  Output from the handbrake cli gets logged individually for each input file
 to a path specified in the global configuration file.  All other output is logged either to the screen if the --interactive flag is 
 set, or otherwise to a session log file which is written to a path specified in the global configuration file.
