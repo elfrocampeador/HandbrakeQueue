@@ -79,17 +79,24 @@ sub run {
     # Append audio tracks
     my @audio_tracks = profile::get_audio_tracks($profile);
     if( @audio_tracks) {
-		push @cmd_args, '--audio';
+        push @cmd_args, '--audio';
         push @cmd_args, join(',', @audio_tracks);
     }
-	
-	# Append audio track names
-	my @audio_track_names = profile::get_audio_track_names($profile);
-	if( @audio_track_names) {
-		push @cmd_args, '--aname';
-		push @cmd_args, join(',', @audio_track_names);
-	}
-	
+
+    # Append audio track names
+    my @audio_track_names = profile::get_audio_track_names($profile);
+    if( @audio_track_names) {
+        push @cmd_args, '--aname';
+        push @cmd_args, join(',', @audio_track_names);
+    }
+
+    # Append subtitle tracks
+    my @subtitle_tracks = profile::get_subtitle_tracks($profile);
+    if( @subtitle_tracks) {
+        push @cmd_args, '--subtitle';
+        push @cmd_args, join(',', @subtitle_tracks);
+    }
+
     # Append chapters
     if( profile::get_chapters($profile)) {
         push @cmd_args, '-m';
@@ -102,11 +109,11 @@ sub run {
     }
 
     # Run the command
-	my $cmd_line = join(' ', @cmd_args);
-	
-	my $status = system($cmd_line . " 1>$log_path 2>&1");
-	
-	return $status;
+    my $cmd_line = join(' ', @cmd_args);
+
+    my $status = system($cmd_line . " 1>$log_path 2>&1");
+
+    return $status;
 }
 
 1;

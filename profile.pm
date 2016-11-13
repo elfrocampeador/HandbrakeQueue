@@ -36,13 +36,13 @@ sub get_audio_tracks {
 }
 
 sub get_audio_track_names {
-	my $profile = shift;
-	my @audio_track_names;
-	
-	if( exists $profile->{audio}->{track_names}) {
-		@audio_track_names = (@{$profile->{audio}->{track_names}});
-	}
-	return @audio_track_names;
+    my $profile = shift;
+    my @audio_track_names;
+    
+    if( exists $profile->{audio}->{track_names}) {
+        @audio_track_names = (@{$profile->{audio}->{track_names}});
+    }
+    return @audio_track_names;
 }
 
 sub get_audio_encoder {

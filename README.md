@@ -44,5 +44,5 @@ In order to run this script, you need:
    2. Perl including the following modules
      * Getopt::Long
      * YAML::Tiny
-	 * File::Which
+     * File::Which
    3. HandbrakeCLI
