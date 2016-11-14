@@ -114,4 +114,13 @@ sub get_video_encoder_preset {
     return $encoder_preset;
 }
 
+sub get_video_encoder_tune {
+    my $profile = shift;
+    my $encoder_tune = undef;
+    if( exists $profile->{video}->{encoder_tune}) {
+        $encoder_tune = $profile->{video}->{encoder_tune};
+    }
+    return $encoder_tune;
+}
+
 1;

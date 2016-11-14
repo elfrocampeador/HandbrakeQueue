@@ -108,6 +108,12 @@ sub run {
         push @cmd_args, '--encoder-preset', $encoder_preset;
     }
 
+    # Append encoder tune
+    my $encoder_tune = profile::get_video_encoder_tune($profile);
+    if( defined $encoder_tune) {
+        push @cmd_args, '--encoder-tune', $encoder_tune;
+    }
+
     # Run the command
     my $cmd_line = join(' ', @cmd_args);
 
