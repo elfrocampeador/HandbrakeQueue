@@ -167,7 +167,7 @@ sub ProcessInputFiles
 		$input_filename =~ s/ /\\ /g;
 
 		my $output_filename = $input_filename;
-		my $output_title = undef; # The encoder module will try to set this as the output's title.  It will do who knows what if undef.
+		my $output_title = undef; # The encoder module will try to set this as the output's title, defaults to use --main-feature
         my $output_chapters = undef;
 
 		my $extension_acceptable = 0;

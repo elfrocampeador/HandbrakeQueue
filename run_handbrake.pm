@@ -61,6 +61,8 @@ sub run {
 
     if( defined $title) {
         push @cmd_args, '-t', $title;
+    } else {
+        push @cmd_args, '--main-feature';
     }
     if( defined $chapters) {
         push @cmd_args, '-c', $chapters
