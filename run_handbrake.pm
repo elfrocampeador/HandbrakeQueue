@@ -51,7 +51,7 @@ Actually run the HandBrakeCLI on a file.
 =cut
 
 sub run {
-    my ($infile, $outfile, $title, $profile_path, $log_path) = @_;
+    my ($infile, $outfile, $title, $profile_path, $log_path, $chapters) = @_;
     if( find_handbrake_cli() == 0) {
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
@@ -61,6 +61,9 @@ sub run {
 
     if( defined $title) {
         push @cmd_args, '-t', $title;
+    }
+    if( defined $chapters) {
+        push @cmd_args, '-c', $chapters
     }
     my $profile = profile::parse($profile_path);
     # Append video encoder option

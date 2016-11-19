@@ -168,6 +168,7 @@ sub ProcessInputFiles
 
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title.  It will do who knows what if undef.
+        my $output_chapters = undef;
 
 		my $extension_acceptable = 0;
 		foreach my $extension (@{$global_configuration->[0]->{input_file_extensions}})
@@ -238,6 +239,10 @@ sub ProcessInputFiles
 				{
 					$output_title = $config_override->[0]->{title};
 				}
+                if (exists $config_override->[0]->{chapters})
+                {
+                    $output_chapters = $config_override->[0]->{chapters};
+                }
 			}
 		}
 
@@ -248,7 +253,7 @@ sub ProcessInputFiles
 		PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
 
-		my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file");
+		my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file", "$output_chapters");
 		
 		if($return_status != 0)
 		{
