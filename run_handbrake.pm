@@ -32,10 +32,12 @@ Check if the HandBrakeCLI executable can be found in the current PATH.
 
 =cut
 
-sub find_handbrake_cli {
+sub find_handbrake_cli
+{
     my $path;
     $path = which('HandBrakeCLI');
-    if( ! defined $path) {
+    if(!defined $path)
+	{
         return 0;
     }
     return 1;
@@ -50,22 +52,28 @@ Actually run the HandBrakeCLI on a file.
 
 =cut
 
-sub run {
-    my ($infile, $outfile, $title, $profile_path, $log_path, $chapters) = @_;
-    if( find_handbrake_cli() == 0) {
+sub run
+{
+    my ($infile, $outfile, $title, $profile_path, $log_path, $output_chapters) = @_;
+    if( find_handbrake_cli() == 0)
+	{
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
 
     my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o',
                     $outfile);
 
-    if( defined $title) {
+    if(defined $title)
+	{
         push @cmd_args, '-t', $title;
-    } else {
+    } 
+	else
+	{
         push @cmd_args, '--main-feature';
     }
-    if( defined $chapters) {
-        push @cmd_args, '-c', $chapters
+    if(defined $output_chapters)
+	{
+        push @cmd_args, '-c', $output_chapters
     }
     my $profile = profile::parse($profile_path);
     # Append video encoder option
@@ -78,44 +86,51 @@ sub run {
     my $quality = profile::get_quality_factor($profile);
     push @cmd_args, '-q', $quality;
     # Append decomb
-    if( profile::get_decomb($profile)) {
+    if(profile::get_decomb($profile))
+	{
         push @cmd_args, '-5';
     }
     # Append audio tracks
     my @audio_tracks = profile::get_audio_tracks($profile);
-    if( @audio_tracks) {
+    if(@audio_tracks)
+	{
         push @cmd_args, '--audio';
         push @cmd_args, join(',', @audio_tracks);
     }
 
     # Append audio track names
     my @audio_track_names = profile::get_audio_track_names($profile);
-    if( @audio_track_names) {
+    if(@audio_track_names)
+	{
         push @cmd_args, '--aname';
         push @cmd_args, join(',', @audio_track_names);
     }
 
     # Append subtitle tracks
     my @subtitle_tracks = profile::get_subtitle_tracks($profile);
-    if( @subtitle_tracks) {
+    if(@subtitle_tracks)
+	{
         push @cmd_args, '--subtitle';
         push @cmd_args, join(',', @subtitle_tracks);
     }
 
     # Append chapters
-    if( profile::get_chapters($profile)) {
+    if(profile::get_chapters($profile))
+	{
         push @cmd_args, '-m';
     }
 
     # Append encoder preset
     my $encoder_preset = profile::get_video_encoder_preset($profile);
-    if( defined $encoder_preset) {
+    if(defined $encoder_preset)
+	{
         push @cmd_args, '--encoder-preset', $encoder_preset;
     }
 
     # Append encoder tune
     my $encoder_tune = profile::get_video_encoder_tune($profile);
-    if( defined $encoder_tune) {
+    if(defined $encoder_tune)
+	{
         push @cmd_args, '--encoder-tune', $encoder_tune;
     }
 

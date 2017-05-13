@@ -164,7 +164,8 @@ sub ProcessInputFiles
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
 		my $orig_input_filename = $input_filename;
-		$input_filename =~ s/ /\\ /g;
+		$input_filename =~ s/ /\\ /g; # Escape out spaces
+		$input_filename =~ s/'/\\'/g; # Escape out single quotes
 
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title, defaults to use --main-feature
@@ -239,9 +240,9 @@ sub ProcessInputFiles
 				{
 					$output_title = $config_override->[0]->{title};
 				}
-                if (exists $config_override->[0]->{chapters})
+                if(exists $config_override->[0]->{split_chapters})
                 {
-                    $output_chapters = $config_override->[0]->{chapters};
+                    $output_chapters = $config_override->[0]->{split_chapters};
                 }
 			}
 		}
@@ -253,7 +254,15 @@ sub ProcessInputFiles
 		PrintMessage("Beginning encode, encode log for this file will be saved as $encode_log_file", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Beginning encode, encode log for this file will be saved as $encode_log_file", 1) unless($interactive_mode);
 
-		my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file", "$output_chapters");
+		my $return_status = undef;
+		if(defined $output_chapters)
+		{
+			$return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file", "$output_chapters");
+		}
+		else
+		{
+			my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file");
+		}
 		
 		if($return_status != 0)
 		{
