@@ -268,6 +268,7 @@ sub ProcessInputFiles
 		{
 			my $new_filename = $orig_input_filename . ".BAD";
 			$input_filename =~ s/\\ / /g;
+			$input_filename =~ s/'/\\'/g; # Escape out single quotes
 
 			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
@@ -286,6 +287,7 @@ sub ProcessInputFiles
 			{
 				my $new_filename = $orig_input_filename . ".DONE";
 				$input_filename =~ s/\\ / /g;
+				$input_filename =~ s/'/\\'/g; # Escape out single quotes
 
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
