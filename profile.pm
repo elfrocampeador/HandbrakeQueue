@@ -88,7 +88,7 @@ sub get_subtitle_tracks {
     my $profile = shift;
     my @subtitle_tracks;
     if( exists $profile->{subtitle}->{tracks}) {
-        my @subtitle_tracks = $profile->{subtitle}->{tracks};
+        @subtitle_tracks = (@{$profile->{subtitle}->{tracks}});
     }
     return @subtitle_tracks;
 }
