@@ -55,10 +55,16 @@ Actually run the HandBrakeCLI on a file.
 sub run
 {
     my ($infile, $outfile, $title, $profile_path, $log_path, $output_chapters) = @_;
-    if( find_handbrake_cli() == 0)
+	
+	if( find_handbrake_cli() == 0)
 	{
         die "ERROR: Can't find HandBrakeCLI executable in the PATH";
     }
+	
+	if($^O ne "linux") # If we're not running on linux (assume Windows)
+	{
+		$infile = "\"$infile\"";
+	}
 
     my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o',
                     $outfile);
