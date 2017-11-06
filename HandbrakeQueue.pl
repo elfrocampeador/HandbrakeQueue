@@ -164,9 +164,10 @@ sub ProcessInputFiles
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
 		my $orig_input_filename = $input_filename;
-		$input_filename =~ s/ /\\ /g; # Escape out spaces
-		$input_filename =~ s/'/\\'/g; # Escape out single quotes
-		$input_filename =~ s/&/\\&/g; # Escape out ampersands
+		#$input_filename =~ s/ /\\ /g; # Escape out spaces
+		#$input_filename =~ s/'/\\'/g; # Escape out single quotes
+		#$input_filename =~ s/&/\\&/g; # Escape out ampersands
+		$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
 
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title, defaults to use --main-feature
@@ -268,9 +269,10 @@ sub ProcessInputFiles
 		if($return_status != 0)
 		{
 			my $new_filename = $orig_input_filename . ".BAD";
-			$input_filename =~ s/\\ / /g;
-			$input_filename =~ s/'/\\'/g; # Escape out single quotes
-			$input_filename =~ s/&/\\&/g; # Escape out ampersands
+			#$input_filename =~ s/\\ / /g;
+			#$input_filename =~ s/'/\\'/g; # Escape out single quotes
+			#$input_filename =~ s/&/\\&/g; # Escape out ampersands
+			$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
 
 			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
@@ -288,9 +290,10 @@ sub ProcessInputFiles
 			if($global_configuration->[0]->{on_complete} eq "rename")
 			{
 				my $new_filename = $orig_input_filename . ".DONE";
-				$input_filename =~ s/\\ / /g;
-				$input_filename =~ s/'/\\'/g; # Escape out single quotes
-				$input_filename =~ s/&/\\&/g; # Escape out ampersands
+				#$input_filename =~ s/\\ / /g;
+				#$input_filename =~ s/'/\\'/g; # Escape out single quotes
+				#$input_filename =~ s/&/\\&/g; # Escape out ampersands
+				$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
 
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);

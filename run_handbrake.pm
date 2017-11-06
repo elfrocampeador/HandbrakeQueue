@@ -64,6 +64,10 @@ sub run
 	if($^O ne "linux") # If we're not running on linux (assume Windows)
 	{
 		$infile = "\"$infile\"";
+		#$infile =~ s/ /\\ /g; # Escape out spaces
+		#$infile =~ s/\\/\\\\/g; # Escape out spaces
+		$infile =~ s/(\W)/\\$1/g; # Escape out all special characters
+		print "\n" . $infile . "\n";
 	}
 
     my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o',
