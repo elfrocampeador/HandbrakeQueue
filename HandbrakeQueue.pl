@@ -193,8 +193,8 @@ sub ProcessInputFiles
 		PrintMessage("Processing $input_directory_path$input_filename...", 1) if($interactive_mode);
 		PrintMessageToFile($session_log_handle, "Processing $input_directory_path$input_filename", 1) unless($interactive_mode);
 
-		my $override_config_file = $input_filename;
-		$override_config_file =~ s/\..*?$/.yml/;
+		my $override_config_file = $input_directory_path . $orig_input_filename;
+		$override_config_file =~ s/.mkv$/.yml/;
 
 		if(-e $override_config_file && -f $override_config_file)
 		{
@@ -268,11 +268,12 @@ sub ProcessInputFiles
 		
 		if($return_status != 0)
 		{
-			my $new_filename = $orig_input_filename . ".BAD";
+			#my $new_filename = $orig_input_filename . ".BAD";
 			#$input_filename =~ s/\\ / /g;
 			#$input_filename =~ s/'/\\'/g; # Escape out single quotes
 			#$input_filename =~ s/&/\\&/g; # Escape out ampersands
-			$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+			#$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+			my $new_filename = $input_filename . ".BAD";
 
 			PrintMessage("WARNING: Encode for $input_filename failed!  Check log file for details!", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Encode for $input_filename failed!  Check log file for details!", 1) unless($interactive_mode);
@@ -280,7 +281,10 @@ sub ProcessInputFiles
 			PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-			move("$input_directory_path$input_filename", "$input_directory_path$new_filename");
+			if(!move("$input_directory_path$input_filename", "$input_directory_path$new_filename"))
+			{
+				PrintMessageToFile($session_log_handle, "WARNING: Couldn't rename $input_filename to $new_filename", 0);
+			}
 		}
 		else
 		{
@@ -289,16 +293,20 @@ sub ProcessInputFiles
 
 			if($global_configuration->[0]->{on_complete} eq "rename")
 			{
-				my $new_filename = $orig_input_filename . ".DONE";
+				##my $new_filename = $orig_input_filename . ".DONE";
 				#$input_filename =~ s/\\ / /g;
 				#$input_filename =~ s/'/\\'/g; # Escape out single quotes
 				#$input_filename =~ s/&/\\&/g; # Escape out ampersands
-				$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+				#$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+				my $new_filename = $input_filename . ".DONE";
 
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-				move("$input_directory_path$input_filename", "$input_directory_path$new_filename");
+				if(!move("$input_directory_path$input_filename", "$input_directory_path$new_filename"))
+				{
+					PrintMessageToFile($session_log_handle, "WARNING: Couldn't rename $input_filename to $new_filename", 0);
+				}
 			}
 			else # delete
 			{
