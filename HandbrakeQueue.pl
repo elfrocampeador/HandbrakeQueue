@@ -23,6 +23,7 @@ use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
 use File::Copy;
+use File::Spec;
 
 use run_handbrake;
 
@@ -281,7 +282,9 @@ sub ProcessInputFiles
 			PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 			PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-			if(!move("$input_directory_path$input_filename", "$input_directory_path$new_filename"))
+			my $source_path = catfile($input_directory_path, $input_filename)
+			my $dest_path = catfile($input_directory_path, $new_filename)
+			if(!move($source_path, $dest_path))
 			{
 				PrintMessageToFile($session_log_handle, "WARNING: Couldn't rename $input_filename to $new_filename", 0);
 			}
@@ -303,7 +306,9 @@ sub ProcessInputFiles
 				PrintMessage("WARNING: Renaming the file to $new_filename to get it out of the way.", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "WARNING: Renaming the file to $new_filename to get it out of the way.", 1) unless($interactive_mode);
 
-				if(!move("$input_directory_path$input_filename", "$input_directory_path$new_filename"))
+				my $source_path = catfile($input_directory_path, $input_filename)
+				my $dest_path = catfile($input_directory_path, $new_filename)
+				if(!move($source_path, $dest_path))
 				{
 					PrintMessageToFile($session_log_handle, "WARNING: Couldn't rename $input_filename to $new_filename", 0);
 				}
