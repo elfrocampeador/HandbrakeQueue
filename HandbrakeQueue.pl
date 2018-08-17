@@ -264,7 +264,7 @@ sub ProcessInputFiles
 		}
 		else
 		{
-			my $return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file");
+			$return_status = run_handbrake::run("$input_directory_path$input_filename", "$output_directory_path$output_filename", $output_title, $profile_file, "$encode_log_file");
 		}
 		
 		if($return_status != 0)
