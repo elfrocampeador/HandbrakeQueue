@@ -32,6 +32,7 @@ use run_handbrake;
 my $script_name = "HandbrakeQueue.pl";
 my $global_configuration; # WARNING: This is a hashref.  It needs to be dereferenced as $global_configuration->[0]->{key}->{subkey} etc
 my $interactive_mode; # When set to true, log output will be dumped to screen rather than a log file
+my $operating_system; # LINUX or WINDOWS
 
 
 # Function Calls
@@ -43,6 +44,17 @@ sub Initialize
 	my $main_config_file;
 	my $session_log_file;
 	my $session_log_handle;
+	
+	if(index($^O, 'Win') != -1)
+	{
+		PrintMessage('Detected operating system as Windows.  Will use windows local config files');
+		$operating_system = 'WINDOWS';
+	}
+	else
+	{
+		PrintMessage('Detected operating system as Linux.  Will use default local config files');
+		$operating_system = 'LINUX';
+	}
 
 	GetOptions("config=s" => \$main_config_file,
 			   'interactive' => \$interactive_mode)
@@ -52,8 +64,13 @@ sub Initialize
 		unless defined($main_config_file);
 
 	# Load main configuration
-	$global_configuration = YAML::Tiny->read($main_config_file)
-		or die("ERROR: Couldn't load main configuration file\n");
+	eval
+	{
+		$global_configuration = YAML::Tiny->read($main_config_file);
+	} or do
+	{
+		die ("ERROR: Encountered error while loading main configuration file.\nError message was: $@\n");
+	};
 
 	if(!$interactive_mode)
 	{
@@ -92,8 +109,15 @@ sub ProcessInputDirectories
 			my $locally_configured;
 			my $output_path = $global_configuration->[0]->{default_output_path};
 			my $profile_file = $global_configuration->[0]->{default_profile};
+			
+			my $local_config_filename = 'local_config.yml';
 
-			if(-e $path . "local_config.yml" && -f $path . "local_config.yml") # If a local configuration file is present
+			if($operating_system eq "WINDOWS") # If on windows, use an alternate config file
+			{
+				$local_config_filename = 'windows_local_config.yml';
+			}
+			
+			if(-e $path . $local_config_filename && -f $path . $local_config_filename) # If a local configuration file is present
 			{
 				PrintMessage("Local configuration file found, loading it...", 1) if($interactive_mode);
 				PrintMessageToFile($session_log_handle, "Local configuration file found, loading it...", 1) unless($interactive_mode);
@@ -103,7 +127,7 @@ sub ProcessInputDirectories
 				$locally_configured = 1;
 
 				my $local_configuration;
-				unless($local_configuration = YAML::Tiny->read($path . "local_config.yml"))
+				unless($local_configuration = YAML::Tiny->read($path . $local_config_filename))
 				{
 					$locally_configured = 0;
 					PrintMessage("WARNING: Couldn't process local configuration file.  Will use defaults", 0) if($interactive_mode);
@@ -165,10 +189,11 @@ sub ProcessInputFiles
 	while(my $input_filename = readdir(INPUT_DIR))
 	{
 		my $orig_input_filename = $input_filename;
-		#$input_filename =~ s/ /\\ /g; # Escape out spaces
-		#$input_filename =~ s/'/\\'/g; # Escape out single quotes
-		#$input_filename =~ s/&/\\&/g; # Escape out ampersands
-		$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+		
+		if($operating_system ne 'WINDOWS')
+		{
+			$input_filename =~ s/(\W)/\\$1/g; # Escape out all special characters
+		}
 
 		my $output_filename = $input_filename;
 		my $output_title = undef; # The encoder module will try to set this as the output's title, defaults to use --main-feature

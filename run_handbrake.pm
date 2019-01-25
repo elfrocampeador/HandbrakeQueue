@@ -63,11 +63,13 @@ sub run
 	
 	if($^O ne "linux") # If we're not running on linux (assume Windows)
 	{
-		$infile = "\"$infile\"";
+		#$infile = "\"$infile\"";
 		#$infile =~ s/ /\\ /g; # Escape out spaces
 		#$infile =~ s/\\/\\\\/g; # Escape out spaces
-		$infile =~ s/(\W)/\\$1/g; # Escape out all special characters
-		print "\n" . $infile . "\n";
+		#$infile =~ s/(\W)/\\$1/g; # Escape out all special characters
+		$infile = "\"" . $infile . "\"";
+		$outfile = "\"" . $outfile . "\"";
+		$log_path = "\"" . $log_path . "\"";
 	}
 
     my @cmd_args = ('HandBrakeCLI', '-i', $infile, '-o',

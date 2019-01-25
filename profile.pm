@@ -20,8 +20,17 @@ use YAML::Tiny;
 
 sub parse {
     my $path = shift;
-    my $profile = YAML::Tiny->read($path) or
-        die("ERROR: Couldn't load the profile config file\n");
+	
+	my $profile = undef;
+	
+	eval
+	{
+		$profile = YAML::Tiny->read($path);
+	} or do
+	{
+		die("ERROR: Error encountered while loading the profile config file.\nError message was: $@\n");
+	};
+	
     return $profile->[0];
 }
 
