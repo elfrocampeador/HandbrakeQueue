@@ -19,6 +19,8 @@
 use strict;
 use warnings;
 
+use lib '.';
+
 use POSIX qw(strftime);
 use Getopt::Long;
 use YAML::Tiny; # Going to need this to load our many various config files
