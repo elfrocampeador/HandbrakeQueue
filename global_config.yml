@@ -4,6 +4,7 @@ encode_log_path: /data0/private/VideoTranscoding/logs/encode/
 input_paths:
   - /data0/private/VideoTranscoding/sd_input/
   - /data0/private/VideoTranscoding/hd_input/
+  - /data0/private/VideoTranscoding/uhd_input/
 input_file_extensions:
   - .avi
   - .mkv

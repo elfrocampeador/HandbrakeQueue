@@ -1,0 +1,26 @@
+audio:
+  encoder: copy
+  tracks:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+
+video:
+  encoder: x264
+  encoder_preset: veryslow
+  quality: 20
+
+filters:
+  decomb: True
+
+subtitle:
+  tracks:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+
+chapters: True

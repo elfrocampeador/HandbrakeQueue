@@ -1,0 +1,13 @@
+---
+session_log_path: Y:\VideoTranscoding\logs\session\
+encode_log_path: Y:\VideoTranscoding\logs\encode\
+input_paths:
+  - Y:\VideoTranscoding\sd_input\
+  - Y:\VideoTranscoding\hd_input\
+input_file_extensions:
+  - .avi
+  - .mkv
+  - .mp4
+default_output_path: Y:\VideoTranscoding\sd_output\
+default_profile: Y:\VideoTranscoding\profiles\default_profile.yml
+on_complete: rename

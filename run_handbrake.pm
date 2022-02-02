@@ -58,7 +58,7 @@ sub run
 	
 	if( find_handbrake_cli() == 0)
 	{
-        die "ERROR: Can't find HandBrakeCLI executable in the PATH";
+        print("\nWARNING: Can't find HandBrakeCLI executable in the PATH.  Hopefully it's in an alias instead!");
     }
 	
 	if($^O ne "linux") # If we're not running on linux (assume Windows)
@@ -150,6 +150,11 @@ sub run
     my $cmd_line = join(' ', @cmd_args);
 
     my $status = system($cmd_line . " 1>$log_path 2>&1");
+	
+	if($status != 0)
+	{
+		print("\nERROR: Command $cmd_line FAILED WITH STATUS $status")
+	}
 
     return $status;
 }
